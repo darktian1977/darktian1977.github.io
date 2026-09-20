@@ -1,0 +1,190 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://darktian1977.github.io/sipah/attestations/schemas/execution-closure-v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "execution_profile",
+    "platform",
+    "artifacts",
+    "environment",
+    "path_entries",
+    "pythonpath_entries",
+    "network_mode",
+    "subprocess_mode",
+    "symlink_policy",
+    "cache_policy",
+    "network_allowlist",
+    "subprocess_allowlist"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "platform": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "os",
+        "arch",
+        "runtime_version"
+      ],
+      "properties": {
+        "os": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "arch": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "runtime_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        }
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 10000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "role",
+          "path",
+          "sha256"
+        ],
+        "properties": {
+          "role": {
+            "type": "string",
+            "pattern": "^[A-Z0-9_]{1,64}$"
+          },
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      }
+    },
+    "environment": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 8192
+      }
+    },
+    "path_entries": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {
+        "type": "string",
+        "maxLength": 2048
+      }
+    },
+    "pythonpath_entries": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {
+        "type": "string",
+        "maxLength": 2048
+      }
+    },
+    "network_mode": {
+      "enum": [
+        "DENY_ALL",
+        "ALLOWLIST"
+      ]
+    },
+    "network_allowlist": {
+      "type": "array",
+      "maxItems": 128,
+      "items": {
+        "type": "string",
+        "maxLength": 4096
+      }
+    },
+    "subprocess_mode": {
+      "enum": [
+        "DENY_ALL",
+        "ALLOWLIST"
+      ]
+    },
+    "subprocess_allowlist": {
+      "type": "array",
+      "maxItems": 128,
+      "items": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{64}$"
+      }
+    },
+    "symlink_policy": {
+      "enum": [
+        "DENY",
+        "RESOLVE_AND_FREEZE"
+      ]
+    },
+    "cache_policy": {
+      "enum": [
+        "DISABLED",
+        "FROZEN_BY_DIGEST"
+      ]
+    },
+    "execution_profile": {
+      "enum": [
+        "REFERENCE_FIXTURE",
+        "CERTIFICATION_EXECUTION"
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "network_mode": {
+            "const": "DENY_ALL"
+          }
+        },
+        "required": [
+          "network_mode"
+        ]
+      },
+      "then": {
+        "properties": {
+          "network_allowlist": {
+            "maxItems": 0
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "subprocess_mode": {
+            "const": "DENY_ALL"
+          }
+        },
+        "required": [
+          "subprocess_mode"
+        ]
+      },
+      "then": {
+        "properties": {
+          "subprocess_allowlist": {
+            "maxItems": 0
+          }
+        }
+      }
+    }
+  ]
+}

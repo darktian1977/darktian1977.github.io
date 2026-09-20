@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://darktian1977.github.io/sipah/attestations/p4-anchor-receipt/v1/schema.json",
+  "title": "P4 Anchor Receipt",
+  "type": "object",
+  "required": [
+    "_type",
+    "subject",
+    "predicateType",
+    "predicate"
+  ],
+  "properties": {
+    "_type": {
+      "const": "https://in-toto.io/Statement/v1"
+    },
+    "subject": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 4096,
+      "items": {
+        "type": "object",
+        "required": [
+          "digest"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048
+          },
+          "uri": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "digest": {
+            "type": "object",
+            "required": [
+              "sha256"
+            ],
+            "properties": {
+              "sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              }
+            },
+            "additionalProperties": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            }
+          },
+          "content": {
+            "type": "string"
+          },
+          "downloadLocation": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "mediaType": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "annotations": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "predicateType": {
+      "const": "https://darktian1977.github.io/sipah/attestations/p4-anchor-receipt/v1"
+    },
+    "predicate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "anchor_profile",
+        "p3_envelope_sha256",
+        "anchor_sequence",
+        "anchored_at",
+        "proof"
+      ],
+      "properties": {
+        "anchor_profile": {
+          "const": "LOCAL_SOVEREIGN"
+        },
+        "p3_envelope_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "anchor_sequence": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "anchored_at": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?Z$"
+        },
+        "proof": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "monotonic_sequence",
+            "previous_anchor_envelope_sha256"
+          ],
+          "properties": {
+            "monotonic_sequence": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "previous_anchor_envelope_sha256": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": true
+}

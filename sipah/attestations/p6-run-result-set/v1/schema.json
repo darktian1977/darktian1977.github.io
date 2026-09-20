@@ -1,0 +1,258 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://darktian1977.github.io/sipah/attestations/p6-run-result-set/v1/schema.json",
+  "title": "P6 Run Result Set",
+  "type": "object",
+  "required": [
+    "_type",
+    "subject",
+    "predicateType",
+    "predicate"
+  ],
+  "properties": {
+    "_type": {
+      "const": "https://in-toto.io/Statement/v1"
+    },
+    "subject": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 4096,
+      "items": {
+        "type": "object",
+        "required": [
+          "digest"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048
+          },
+          "uri": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "digest": {
+            "type": "object",
+            "required": [
+              "sha256"
+            ],
+            "properties": {
+              "sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              }
+            },
+            "additionalProperties": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            }
+          },
+          "content": {
+            "type": "string"
+          },
+          "downloadLocation": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "mediaType": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "annotations": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "predicateType": {
+      "const": "https://darktian1977.github.io/sipah/attestations/p6-run-result-set/v1"
+    },
+    "predicate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "run_id",
+        "p3_envelope_sha256",
+        "p5_envelope_sha256",
+        "consumption_event_envelope_sha256",
+        "status",
+        "run_integrity_error_codes",
+        "invalid_reason",
+        "result_count",
+        "results",
+        "metrics",
+        "case_fingerprint_index_sha256",
+        "scorer_provenance"
+      ],
+      "properties": {
+        "run_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9._:-]{1,128}$"
+        },
+        "p3_envelope_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "p5_envelope_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "consumption_event_envelope_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "status": {
+          "enum": [
+            "PASS",
+            "FAIL",
+            "INVALID"
+          ]
+        },
+        "invalid_reason": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            }
+          ]
+        },
+        "result_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "results": {
+          "type": "array",
+          "maxItems": 100000,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "case_id",
+              "case_fingerprint_sha256",
+              "outcome",
+              "error_code",
+              "result_sha256",
+              "result_uri"
+            ],
+            "properties": {
+              "case_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9._:-]{1,128}$"
+              },
+              "case_fingerprint_sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "outcome": {
+                "enum": [
+                  "PASS",
+                  "FAIL",
+                  "INVALID"
+                ]
+              },
+              "error_code": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "string",
+                    "pattern": "^[A-Z0-9_]{1,64}$"
+                  }
+                ]
+              },
+              "result_sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "result_uri": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
+              }
+            }
+          },
+          "minItems": 1
+        },
+        "metrics": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "metric_id",
+              "formula_id",
+              "numerator",
+              "denominator"
+            ],
+            "properties": {
+              "numerator": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "denominator": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "formula_id": {
+                "const": "COUNT_RATIO_OVER_RESULT_COUNT"
+              },
+              "metric_id": {
+                "enum": [
+                  "PASS_RATE",
+                  "FAIL_RATE",
+                  "INVALID_RATE"
+                ]
+              }
+            }
+          }
+        },
+        "case_fingerprint_index_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "scorer_provenance": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "uri",
+            "sha256"
+          ],
+          "properties": {
+            "uri": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          }
+        },
+        "run_integrity_error_codes": {
+          "type": "array",
+          "maxItems": 128,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z0-9_]{1,64}$"
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": true
+}
